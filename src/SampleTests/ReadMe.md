@@ -1,0 +1,1 @@
+The javascript contained in this folder are example Jest test from Pluaralsight course React Fundaments by Liam Mclennan.
