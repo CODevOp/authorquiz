@@ -62,12 +62,71 @@ npm start
 ```
 ### Add underscore to app 
 * [underscore](https://www.npmjs.com/package/underscore)
-* Underscore.js is a utility-belt library for JavaScript that provides support for the usual functional suspects (each, map, reduce, filter...) without extending any core JavaScript objects.
+* Underscore.js is a utility-belt library for JavaScript that provides support for the usual functional suspects (each, map, reduce, filter...) without extending any core JavaScript objects. shuffle and sample are used from this library to sort and randomly choose a author. 
 * Install 
     ```Powershell
     npm i underscore
     ```
 
+### Install some test librares to work with Jest the default React test library.
+* Install enzyme to get better error messages from Jest tests
+    ```Cmd
+    npm install enzyme --save-dev
+    npm install enzyme --save-dev
+    ```
+    * Install the [Jest extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest) for Visual Studio Code. 
+* Prepare
+    ```Javascript
+    import Enzyme, {mount, shallow, render} from 'enzyme';
+    import Adapter from 'enzyme-adapter-react-16';
+    Enzyme.configure({ adapter: new Adapter() });
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // incomplete code
+    ```
+* Use
+    * mount function to render the page
+    ```javascript
+    // incomplete code
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    describe("when no answer has been selected", () => {
+        let wrapper;
+        beforeAll( () => {
+        wrapper = mount(<AuthorQuiz {...state} onAnswerSelected={() => {}} />);
+        })
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    }
+    ```
+    * Create a new state, where testing can start drilling down into the functionality of the site. Before each test, We need load the initial page state and start testing it is correct. 
+    * To render the page state use enzymes mount fuction to return the page.
+
+    * Jest.fn() and simulate a click
+    ```Javascript
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    describe("when the correct answer has been clicked", () => {
+        let wrapper;
+        const handleAnswerSelected = jest.fn(); // 1
+        
+        beforeAll( () => {
+        wrapper = mount(<AuthorQuiz {...Object.assign({}, state, {highlight: 'correct'})} onAnswerSelected={handleAnswerSelected} />); //2
+        wrapper.find('.answer').first().simulate('click');  //3
+        });
+        
+        it("onAnswered should be called", () => {
+        expect(handleAnswerSelected).toHaveBeenCalled(); // 4
+        });    
+
+        it("should receive The Shining", () => {
+            expect(handleAnswerSelected ).toHaveBeenCalledWith("The Shining") //5
+        });
+    });
+    ```
+    * change empty object for onAnswerSelected to a jest function, allowing a click simulation
+    1. declare jest function handle as a javascript const. 
+    2. pass handle to onAnswerSelected
+    3. simulate the click
+    4. test the answer was selected
+    5. answer contains "The Shinning"
+
 ## TODO: 
-    (1) Cleanup Readme
+    (1) Cleanup Readme - done
     (2) [Learn more about Jest](https://www.sitepoint.com/test-react-components-jest/)
