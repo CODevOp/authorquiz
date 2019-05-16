@@ -5,6 +5,7 @@ import Enzyme, {mount, shallow, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import AuthorQuiz from './AuthorQuiz';
 import { exportAllDeclaration } from '@babel/types';
+
 Enzyme.configure({ adapter: new Adapter() });
 
 const state = {

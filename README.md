@@ -127,6 +127,118 @@ npm start
     4. test the answer was selected
     5. answer contains "The Shinning"
 
+### Add routing
+* install react router dom
+    ```Powershell
+    npm install react-router-dom
+    ```
+* configure
+    ```JavaScript
+    import { BrowserRouter, Route, withRouter } from 'react-router-dom';
+    ```
+* use
+    ```Javascript
+    function App() {
+    return <AuthorQuiz {...state} 
+        onAnswerSelected={onAnswerSelected} 
+        onContinue={() => {
+        state = resetState();
+        render();
+        }}/>;
+    }
+
+    ```
+* change
+    ```Javascript
+    function render(){
+        ReactDOM.render(<AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />, document.getElementById('root'));
+    }
+    // to
+    function render(){
+        ReactDOM.render(<App />, document.getElementById('root'));
+    }
+
+    // and add routes
+    function render() {
+        ReactDOM.render(
+        <BrowserRouter>
+            <React.Fragment>
+                <Route exact path="/" component={App} />
+                <Route path="/add" component={AuthorWrapper} />
+            </React.Fragment>
+        </BrowserRouter>, document.getElementById('root'));
+    }
+    ```
+    * Last render includes Browser Router
+    * A Router may only have one child, so we use React.Fragment to represent a parent element 
+### Add a Link on AuthorForm
+* configure
+    ```Javascript
+    import { Link } from 'react-router-dom';
+    ```
+* use
+    ```Javascript
+    <Link to="/add">Add an author</Link>
+    ```
+### Add a Module
+* Create a new file <moduleName>.js
+    * import react
+    ```JavaScript
+    import React from 'react';
+    ```
+    * add new module code
+    * export module
+    ```JavaScript
+    export default <moduleName>
+    ```
+    * import module to index.js
+    ```JavaScript
+    import AddAuthorForm from './AddAuthorForm'
+    ```
+#### Add form in module
+* Add the html form to your new module
+    ```Javascript
+    <form>
+            <div>
+                <label htmlFor="name">Name</label>
+                <input type="text" name="name" />
+            </div >       
+        </form>;
+    ```
+* Add some formating
+    ```Javascript
+    import './AddAuthorForm.css';
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    <form>
+            <div className="AddAuthorForm__input">
+                <label htmlFor="name">Name</label>
+                <input type="text" name="name" />
+            </div>
+        </form>;
+    ```
+
+    ```Javascript
+    <form onSubmit={this.handleSubmit}>
+            <div className="AddAuthorForm__input">
+                <label htmlFor="name">Name</label>
+                <input type="text" name="name" value={this.state.name} onChange={this.onFieldChange} />
+            </div>
+            <div className="AddAuthorForm__input">
+                <label htmlFor="imageUrl">Image URL</label>
+                <input type="text" name="imageUrl" value={this.state.imageUrl} onChange={this.onFieldChange} />
+            </div>
+            <div className="AddAuthorForm__input">
+                <label htmlFor="bookTemp">Books</label>
+                {this.state.books.map((book) => <p key={book}>{book}</p>)}
+                <input type="text" name="bookTemp" value={this.state.bookTemp} onChange={this.onFieldChange} />
+                <input type="button" value="+" onClick={this.handleAddBook} />
+            </div>
+            <input type="submit" value="Add"/>
+        </form>;
+    ```
+#### Add state to the form
+
 ## TODO: 
-    (1) Cleanup Readme - done
-    (2) [Learn more about Jest](https://www.sitepoint.com/test-react-components-jest/)
+1. Cleanup Readme - done
+2. [Learn more about Jest](https://www.sitepoint.com/test-react-components-jest/)
