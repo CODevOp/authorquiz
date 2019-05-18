@@ -65,11 +65,17 @@ function getTurnData(authors) {
 
     }
 }
-const state = {
+
+function resetState(){
+  return {
     turnData: getTurnData(authors),
     highlight: 'none'
     
+  };
 }
+
+let state = resetState();
+
 function onAnswerSelected(answer) {
   const isCorrect = state.turnData.author.books.some((book) => book === answer);
   state.highlight = isCorrect ? 'correct' : 'wrong';
@@ -77,15 +83,29 @@ function onAnswerSelected(answer) {
 }
 
 function App() {
-  return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />;
+  return <AuthorQuiz {...state} 
+    onAnswerSelected={onAnswerSelected} 
+    onContinue={() => {
+      state = resetState();
+      render();
+    }}
+    />;
   }
 
-  function render() {
+  const AuthorWrapper = withRouter(({ history }) => 
+  <AddAuthorForm onAddAuthor={ (author) => {
+    authors.push(author);
+    history.push('/');
+    console.log(authors);
+  }} />
+);
+  
+function render() {
     ReactDOM.render(
     <BrowserRouter>
         <React.Fragment>
         <Route exact path="/" component={App} />
-        <Route path="/add" component={AddAuthorForm} />
+        <Route path="/add" component={AuthorWrapper} />
         </React.Fragment>
     </BrowserRouter>, document.getElementById('root'));
     }

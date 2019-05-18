@@ -237,7 +237,24 @@ npm start
             <input type="submit" value="Add"/>
         </form>;
     ```
+#### Add AddAuthor Component to AuthorForm
+* add component to route
+
 #### Add state to the form
+* add constructor
+* add state object
+* add onFieldChange event
+
+#### Add Submit button
+* add bind handleSubmit
+* add handleSubmit function
+* add handleSubmit event
+
+#### Add Add book to AddAuthor
+
+#### Add continue component
+#### Reset state on Continue
+#### Add AuthorWrapper to update authors
 
 ## TODO: 
 1. Cleanup Readme - done
