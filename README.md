@@ -196,14 +196,17 @@ npm start
     import AddAuthorForm from './AddAuthorForm'
     ```
 #### Add form in module
+* [React Form Reference](https://reactjs.org/docs/forms.html)
 * Add the html form to your new module
     ```Javascript
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     <form>
             <div>
                 <label htmlFor="name">Name</label>
                 <input type="text" name="name" />
             </div >       
         </form>;
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ```
 * Add some formating
     ```Javascript
@@ -237,24 +240,261 @@ npm start
             <input type="submit" value="Add"/>
         </form>;
     ```
-#### Add AddAuthor Component to AuthorForm
-* add component to route
+### Add AddAuthor Component to AuthorForm
 
 #### Add state to the form
 * add constructor
-* add state object
+    ```javaScript
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    class <FormName>Form extends React.Component {
+        constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            imageUrl: ''
+        };
+        render() {
+            return <form>
+            <div>
+            <label htmlFor="name">Name</label>
+            <input type="text" name="name" value={this.state.name}  />
+            </div>
+            <div>
+            <label htmlFor="imageUrl">Image URL</label>
+            <input type="text" name="imageUrl" value={this.state.imageUrl}  />
+            </div>
+        </form>
+        }
+    }    
+    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ```
+    1. Add constructor to create and initialize properties.
+    2. Constructor will create state object to track changes to form.
+    3. Note constructor is calling the parent class constructor with call to super.
+    4. At this stage the form can be rendered but not changed because there is no event to capture the change. 
+
 * add onFieldChange event
+    ```javaScript
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    class <FormName>Form extends React.Component {
+        constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            imageUrl: ''
+        };
+
+        // event to track changes
+        this.onFieldChange = this.onFieldChange.bind(this);
+
+        // handler to update state
+        onFieldChange(event) {
+            this.setState({
+                [event.target.name]: event.target.value
+            })
+        }
+
+        render() {
+            return <form>
+            <div>
+            <label htmlFor="name">Name</label>
+            <input type="text" name="name" value={this.state.name}  onChange={this.onFieldChange}  />
+            </div>
+            <div>
+            <label htmlFor="imageUrl">Image URL</label>
+            <input type="text" name="imageUrl" value={this.state.imageUrl}  onChange={this.onFieldChange}  />
+            </div>
+        </form>
+        }
+    }    
+    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ```
+    1. Add an event and handler to update state.
+    2. Register the event handler with form field onChange.
+    3. Form data is now updated in state in preparation for submitting the form.
 
 #### Add Submit button
-* add bind handleSubmit
-* add handleSubmit function
-* add handleSubmit event
+* add buttons, handlers and plumbing
+    ```javaScript
+    // AddAuthorform.js
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    class <FormName>Form extends React.Component {
+        constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            imageUrl: ''
+        };
+
+        // event to track changes
+        this.onFieldChange = this.onFieldChange.bind(this);
+        // event to handle submit
+        this.handleSubmit = this.handleSubmit.bind(this);
+
+        // handle on submit
+        handleSubmit(event) {
+            event.preventDefault();
+            this.props.onAddAuthor(this.state);
+        }
+
+        // handler to update state
+        onFieldChange(event) {
+            this.setState({
+                [event.target.name]: event.target.value
+            });
+        }
+
+        render() {
+            return <form onSubmit={this.handleSubmit}>
+            <div>
+            <label htmlFor="name">Name</label>
+            <input type="text" name="name" value={this.state.name}  onChange={this.onFieldChange}  />
+            </div>
+            <div>
+            <label htmlFor="imageUrl">Image URL</label>
+            <input type="text" name="imageUrl" value={this.state.imageUrl}  onChange={this.onFieldChange}  />
+            </div>
+            {/* input control button */}
+            <input type="submit" value="Add"/>
+        </form>
+        }
+    }    
+    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // index.js
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    const AuthorWrapper = withRouter(({ history }) => 
+    <AddAuthorForm onAddAuthor={ (author) => {
+        authors.push(author);
+        history.push('/');
+        console.log(authors);
+    }} />
+    );
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    function render() {
+        ReactDOM.render(
+        <BrowserRouter>
+            <React.Fragment>
+            <Route exact path="/" component={App} />
+            <Route path="/add" component={AuthorWrapper} />
+            </React.Fragment>
+        </BrowserRouter>, document.getElementById('root'));
+    }
+    ```
+
+    1. Add a button to use to submit the form. The button is placed within the form
+    2. Add bind handleSubmit. in the form add a onSubmit event binding.
+    3. Add handleSubmit event. In the component code, with the onFieldChange add the event to bind the form onSubmit to a function to handle the post back index.js.
+    4. Add handleSubmit function. Create function to handle submit. 
+        1. The call to the event.preventDefault() is used to prevent normal form Post.
+        2. onAddAuthor is a method on the component props, it is passed in from index.js.
+
+* Add AuthorWrapper to update authors
+    1. Add the method onAddAuthor to the AddAuthor component in index.js.
+        1. The method is a arrow function. 
+        2. author is passed.
+        3. The author object is pushed to the Authors Json object. 
+        4. The browsers history is updated to redirect back to the main screen.
+        5. The render function is included to show AuthorWrapper is passed as a part of the route properties.
 
 #### Add Add book to AddAuthor
+* Add field to state
+    ```Javascript
+    // AddAuthorForm.js
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        this.state = {
+            name: '',
+            imageUrl: '',
+            books: [],
+            bookTemp: ''
+        };
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ```
+    1. The array books will hold multiple books.
+    2. The field bookTemp is used to add a new book to books. 
 
-#### Add continue component
-#### Reset state on Continue
-#### Add AuthorWrapper to update authors
+* Add field to form to handle book list.
+    ```Javascript
+    // AddAuthorForm.js
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        <div className="AddAuthorForm__input">
+        <label htmlFor="bookTemp">Books</label>
+            {this.state.books.map((book) => <p key={book} >{book}</p> ) }        
+            <input type="text" name="bookTemp" value={this.state.bookTemp} onChange={this.onFieldChange} />
+            <input type="button" value="+" onClick={this.handleAddBook}  />
+        </div>       
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ```
+    1. label is for bookTemp keeping the fields together.
+    2. use a propery map to display a list of books. Note according to MDN the array.map() method is used to create a new array. If the return array is ignored, it is considered an anti-pattern and they sugget a forEach or for-of. In this case the array is ignored and map is used as a forEach, creating  a list of books. 
+    3. The html above also includes the input text box and an add button "+" used to add addtional books.
+
+* Authors can have multiple books so add ability to add many books.
+    ```Javascript
+    // AddAuthorForm.js
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        this.handleAddBook = this.handleAddBook.bind(this);
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    handleAddBook(event){
+        this.setState({
+            books: this.state.books.concat([this.state.bookTemp]),
+            bookTemp: ''
+        });
+    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ```
+    1. "+" button is registered to the this.handleAddBook
+    2. The registered event is mapped to the handAddBook function
+    3. The method handleAddBook adds a new book and clears the bookTemp field, allowing a user to add a new one. 
+
+#### Add to the continue component
+* Expand the Continue component functionality.
+    ```JavaScript
+    // AuthorQuiz.js
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    function Continue({show, onContinue }) {
+      return (
+        <div className="row continue" >
+        { show
+        ? <div className="col-11" >
+            <button className="btn btn-primary btn-lg float-right" onClick={onContinue}>Continue</    button>          
+            </div>
+        : null  }
+        </div>
+      );
+    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    function AuthorQuiz({turnData, highlight, onAnswerSelected, onContinue}) {
+        return (
+        <div className="container-fluid">
+            <Hero/>
+            <Turn {...turnData} highlight={highlight} onAnswerSelected={onAnswerSelected} />
+            <Continue show={highlight === 'correct'} onContinue={onContinue} />
+            <p><Link to="/add">Add an author</Link></p>
+            <Footer />
+        </div>
+        );
+    }
+    // index.js
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~        
+    function App() {
+        return <AuthorQuiz {...state} 
+            onAnswerSelected={onAnswerSelected} 
+            onContinue={() => {
+            state = resetState();
+            render();
+            }}
+            />;
+    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ```
+    1. The initial version of the Continue component returned an empty div.
+    2. The component now takes a show boolean and onContinue function to handle the event when the contnue button is clicked. 
+    3. Now when an answer is selected the continue button is displayed.
+* Reset state on Continue
+    1. When the continue button is clicked the state is reset and the page is rendered. This displays a new question.
 
 ## TODO: 
 1. Cleanup Readme - done

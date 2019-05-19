@@ -90,9 +90,9 @@ function App() {
       render();
     }}
     />;
-  }
+}
 
-  const AuthorWrapper = withRouter(({ history }) => 
+const AuthorWrapper = withRouter(({ history }) => 
   <AddAuthorForm onAddAuthor={ (author) => {
     authors.push(author);
     history.push('/');
@@ -108,7 +108,7 @@ function render() {
         <Route path="/add" component={AuthorWrapper} />
         </React.Fragment>
     </BrowserRouter>, document.getElementById('root'));
-    }
+}
 
 render();
 // If you want your app to work offline and load faster, you can change
