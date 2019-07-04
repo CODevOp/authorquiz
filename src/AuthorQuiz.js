@@ -4,6 +4,8 @@ import './App.css';
 import './bootstrap.min.css'
 import { Link } from 'react-router-dom';
 
+import * as ReactRedux from 'react-redux'
+
 
 function Hero() {
   return (<div className="row">
@@ -71,15 +73,38 @@ function Footer() {
   </div>);
 }
 
-function AuthorQuiz({turnData, highlight, onAnswerSelected, onContinue}) {
+function mapStateToProps(state){
+  return {
+    turnData: state.turnData,
+    highlight: state.highlight 
+  };
+
+}
+function mapDispatchToProps(dispatch){
+  return {
+    onAnswerSelected: (answer) => {
+      dispatch({type: 'ANSWER_SELECTED', answer})
+    } , 
+    onContinue: () => {
+      dispatch({type: 'CONTINUE'});
+    }
+  };
+}
+
+
+
+const AuthorQuiz = ReactRedux.connect(mapStateToProps, mapDispatchToProps)(
+  function ({turnData, highlight, onAnswerSelected, onContinue}) {
     return (
       <div className="container-fluid">
         <Hero/>
         <Turn {...turnData} highlight={highlight} onAnswerSelected={onAnswerSelected} />
-        <Continue show={highlight === 'correct'} onContinue={onContinue} />
+        <Continue show={highlight === 'correct'}  onContinue={onContinue}              />
         <p><Link to="/add">Add an author</Link></p>
         <Footer />
       </div>
     );
-}
+  }
+);
+
 export default AuthorQuiz;
